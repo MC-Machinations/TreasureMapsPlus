@@ -1,0 +1,17 @@
+[versions]
+paperweight = "1.5.3"
+paper = "1.19.4-R0.1-SNAPSHOT"
+
+junit = "5.9.1"
+
+runPaper = "2.0.1"
+licenser = "0.6.1"
+
+[libraries]
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+[plugins]
+paper-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+paper-run = { id = "xyz.jpenilla.run-paper", version.ref = "runPaper" }
+licenser = { id = "org.cadixdev.licenser", version.ref = "licenser" }

@@ -1,0 +1,6 @@
+name: TreasureMapsPlus
+main: me.machinemaker.treasuremapsplus.TreasureMapsPlus
+version: ${version}
+author: Machine_Maker
+api-version: 1.19
+load: STARTUP
