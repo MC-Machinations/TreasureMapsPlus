@@ -1,0 +1,11 @@
+# bStats metrics
+metrics: true
+
+replace:
+  # Replace buried treasure maps in vanilla chest loot tables
+  chests: true
+  villagers:
+    # Replace buried treasure map offers from villagers
+    buried-treasure: true
+    # Replace mansion treasure map offers from villagers
+    mansion: false

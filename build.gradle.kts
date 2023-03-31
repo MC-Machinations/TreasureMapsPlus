@@ -6,11 +6,12 @@ plugins {
     idea
     alias(libs.plugins.paper.userdev)
     alias(libs.plugins.paper.run)
-    alias(libs.plugins.licenser)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.shadow)
 }
 
 group = "me.machinemaker"
-version = "1.0-SNAPSHOT"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -19,6 +20,7 @@ repositories {
 
 dependencies {
     paperweight.paperDevBundle(libs.versions.paper)
+    implementation(libs.mirror)
 
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
@@ -34,17 +36,27 @@ checkstyle {
     toolVersion = "10.3"
 }
 
-license {
-    header(rootProject.file("HEADER"))
-    properties {
-        set("year", "2023")
-        set("name", "Machine_Maker")
+spotless {
+    java {
+        licenseHeaderFile(file("HEADER"))
     }
-    newLine.set(false)
-    include("*.java")
 }
 
+//license {
+//    header(rootProject.file("HEADER"))
+//    properties {
+//        set("year", "2023")
+//        set("name", "Machine_Maker")
+//    }
+//    newLine.set(false)
+//    include("*.java")
+//}
+
 tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+
     compileJava {
         options.release.set(17)
         options.encoding = Charsets.UTF_8.toString()

@@ -1,17 +1,21 @@
 [versions]
 paperweight = "1.5.3"
 paper = "1.19.4-R0.1-SNAPSHOT"
-
 junit = "5.9.1"
+mirror = "0.1.1"
 
 runPaper = "2.0.1"
 licenser = "0.6.1"
+shadow = "8.1.1"
+spotless = "6.17.0"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+mirror = { module = "me.machinemaker.mirror:mirror-paper", version.ref = "mirror" }
 
 [plugins]
 paper-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 paper-run = { id = "xyz.jpenilla.run-paper", version.ref = "runPaper" }
-licenser = { id = "org.cadixdev.licenser", version.ref = "licenser" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
