@@ -1,11 +1,10 @@
 [versions]
-paperweight = "1.5.3"
 paper = "1.19.4-R0.1-SNAPSHOT"
 junit = "5.9.1"
 mirror = "0.1.1"
 
+paperweight = "1.5.3"
 runPaper = "2.0.1"
-licenser = "0.6.1"
 shadow = "8.1.1"
 spotless = "6.17.0"
 

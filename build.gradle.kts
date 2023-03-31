@@ -42,16 +42,6 @@ spotless {
     }
 }
 
-//license {
-//    header(rootProject.file("HEADER"))
-//    properties {
-//        set("year", "2023")
-//        set("name", "Machine_Maker")
-//    }
-//    newLine.set(false)
-//    include("*.java")
-//}
-
 tasks {
     assemble {
         dependsOn(reobfJar)
@@ -64,7 +54,7 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.toString()
-        filesMatching("paper-plugin.yml") {
+        filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
             expand("version" to project.version)
         }
     }

@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import me.machinemaker.mirror.paper.PaperMirror;
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -61,13 +60,13 @@ public final class VillagerTradeOverride {
     private VillagerTradeOverride() {
     }
 
-    public static void setup(final boolean replaceBuriedTreasure, final boolean replaceMansion) {
+    public static void setup(final boolean replaceMonument, final boolean replaceMansion) {
         final Int2ObjectMap<VillagerTrades.ItemListing[]> cartographer = VillagerTrades.TRADES.get(VillagerProfession.CARTOGRAPHER);
         for (final VillagerTrades.ItemListing[] listings : cartographer.values()) {
             for (int i = 0; i < listings.length; i++) {
                 final VillagerTrades.ItemListing listing = listings[i];
                 if (TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(listing)) {
-                    listings[i] = createOverride(listing, replaceBuriedTreasure, replaceMansion);
+                    listings[i] = createOverride(listing, replaceMonument, replaceMansion);
                 }
             }
         }
@@ -87,32 +86,34 @@ public final class VillagerTradeOverride {
 
     private record OverrideListing(VillagerTrades.ItemListing original) implements VillagerTrades.ItemListing {
 
+        private static final float PRICE_MULTIPLIER = 0.2f;
+
         @SuppressWarnings("unchecked")
         @Override
-            public @Nullable MerchantOffer getOffer(final Entity entity, final RandomSource random) {
-                if (!entity.getLevel().paperConfig().environment.treasureMaps.enabled) {
-                    return null;
-                }
-                try {
-                    final ItemStack map = new ItemStack(Items.MAP);
-                    final org.bukkit.inventory.ItemStack bukkitStack = Utils.getBukkitStackMirror(map);
-                    final ItemMeta meta = bukkitStack.getItemMeta();
-                    meta.displayName(translatable((String) DISPLAY_NAME.invoke(this.original)));
-                    meta.lore(List.of(TreasureMapsPlus.LORE));
-                    meta.getPersistentDataContainer().set(TreasureMapsPlus.IS_MAP, PersistentDataType.BYTE, (byte) 1);
-                    meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, ((TagKey<Structure>) DESTINATION.invoke(this.original)).location().toString());
-                    bukkitStack.setItemMeta(meta);
-                    return new MerchantOffer(
-                        new ItemStack(Items.EMERALD, (int) EMERALD_COST.invoke(this.original)),
-                        new ItemStack(Items.COMPASS),
-                        map,
-                        (int) MAX_USES.invoke(this.original),
-                        (int) VILLAGER_XP.invoke(this.original),
-                        0.2F
-                    );
-                } catch (final Throwable throwable) {
-                    throw new RuntimeException(throwable);
-                }
+        public @Nullable MerchantOffer getOffer(final Entity entity, final RandomSource random) {
+            if (!entity.getLevel().paperConfig().environment.treasureMaps.enabled) {
+                return null;
+            }
+            try {
+                final ItemStack map = new ItemStack(Items.MAP);
+                final org.bukkit.inventory.ItemStack bukkitStack = Utils.getBukkitStackMirror(map);
+                final ItemMeta meta = bukkitStack.getItemMeta();
+                meta.displayName(translatable((String) DISPLAY_NAME.invoke(this.original)));
+                meta.lore(List.of(TreasureMapsPlus.LORE));
+                meta.getPersistentDataContainer().set(TreasureMapsPlus.IS_MAP, PersistentDataType.BYTE, (byte) 1);
+                meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, ((TagKey<Structure>) DESTINATION.invoke(this.original)).location().toString());
+                bukkitStack.setItemMeta(meta);
+                return new MerchantOffer(
+                    new ItemStack(Items.EMERALD, (int) EMERALD_COST.invoke(this.original)),
+                    new ItemStack(Items.COMPASS),
+                    map,
+                    (int) MAX_USES.invoke(this.original),
+                    (int) VILLAGER_XP.invoke(this.original),
+                    PRICE_MULTIPLIER
+                );
+            } catch (final Throwable throwable) {
+                throw new RuntimeException(throwable);
             }
         }
+    }
 }

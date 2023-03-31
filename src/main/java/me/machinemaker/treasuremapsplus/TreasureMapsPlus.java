@@ -19,48 +19,22 @@
  */
 package me.machinemaker.treasuremapsplus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import me.machinemaker.treasuremapsplus.listener.PlayerInteract;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.StructureTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.ElderGuardian;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.Style.style;
 import static net.kyori.adventure.text.format.TextDecoration.*;
 
-public final class TreasureMapsPlus extends JavaPlugin implements Listener {
+public final class TreasureMapsPlus extends JavaPlugin {
 
-    static final NamespacedKey IS_MAP = new NamespacedKey("treasuremapsplus", "is_map");
-    static final NamespacedKey MAP_STRUCTURE_TAG_KEY = new NamespacedKey("treasuremapsplus", "map_tag_key");
+    public static final NamespacedKey IS_MAP = new NamespacedKey("treasuremapsplus", "is_map");
+    public static final NamespacedKey MAP_STRUCTURE_TAG_KEY = new NamespacedKey("treasuremapsplus", "map_tag_key");
     static final Component LORE = text("Use to receive treasure!", style(GREEN).decoration(ITALIC, false));
 
     private final Set<Key> lootTables;
@@ -68,85 +42,14 @@ public final class TreasureMapsPlus extends JavaPlugin implements Listener {
         this.saveDefaultConfig();
         this.lootTables = DatapackOverride.setup(this.getConfig().getBoolean("replace.chests", false));
         VillagerTradeOverride.setup(
-            this.getConfig().getBoolean("replace.villagers.buried-treasure", false),
+            this.getConfig().getBoolean("replace.villagers.monument", false),
             this.getConfig().getBoolean("replace.villagers.mansion", false)
         );
     }
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(this, this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
         this.getSLF4JLogger().info("Found {} loot tables with a buried treasure map, {}", this.lootTables.size(), this.lootTables);
     }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEvent(final PlayerInteractEvent event) {
-        if (event.useItemInHand() == Event.Result.DENY || event.getHand() == EquipmentSlot.OFF_HAND) {
-            return;
-        }
-        if (isSpecialMap(event.getItem())) {
-            event.setUseItemInHand(Event.Result.DENY);
-            final ServerPlayer serverPlayer = Utils.getNmsPlayer(event.getPlayer());
-            final List<net.minecraft.world.item.ItemStack> randomItems = rollLootTable(event.getItem(), serverPlayer);
-            if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                event.getItem().setAmount(0);
-            }
-            for (final net.minecraft.world.item.ItemStack randomItem : randomItems) {
-                event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), Utils.getBukkitStackMirror(randomItem.copy()), item1 -> {
-                    item1.setPickupDelay(0);
-                });
-            }
-        }
-    }
-
-    private static List<net.minecraft.world.item.ItemStack> rollLootTable(final ItemStack item, final ServerPlayer player) {
-        boolean isChest = true;
-        ResourceLocation lootTable = BuiltInLootTables.BURIED_TREASURE;
-        final PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-        final @Nullable String tagKey = pdc.get(MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING);
-        if (tagKey != null) {
-            final TagKey<Structure> structureTagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(tagKey));
-            if (structureTagKey == StructureTags.ON_TREASURE_MAPS) {
-                lootTable = BuiltInLootTables.BURIED_TREASURE;
-            } else if (structureTagKey == StructureTags.ON_OCEAN_EXPLORER_MAPS) {
-                isChest = false;
-                lootTable = EntityType.ELDER_GUARDIAN.getDefaultLootTable();
-            } else if (structureTagKey == StructureTags.ON_WOODLAND_EXPLORER_MAPS) {
-                lootTable = BuiltInLootTables.WOODLAND_MANSION;
-            }
-        }
-
-        final LootContext context = isChest ? createChestContext(player) : createEntityContext(player);
-        final List<net.minecraft.world.item.ItemStack> items = new ArrayList<>();
-        Utils.getServer().getLootTables().get(lootTable).getRandomItems(context, items::add);
-        return items;
-
-    }
-
-    private static LootContext createChestContext(final ServerPlayer player) {
-        return new LootContext.Builder(player.getLevel())
-            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(player.blockPosition()))
-            .withLuck(player.getLuck())
-            .withParameter(LootContextParams.THIS_ENTITY, player)
-            .create(LootContextParamSets.CHEST);
-    }
-
-    private static LootContext createEntityContext(final ServerPlayer player) {
-        final ElderGuardian guardian = new ElderGuardian(EntityType.ELDER_GUARDIAN, player.getLevel());
-        return new LootContext.Builder(player.getLevel())
-            .withRandom(guardian.getRandom())
-            .withParameter(LootContextParams.THIS_ENTITY, guardian)
-            .withParameter(LootContextParams.ORIGIN, player.position())
-            .withParameter(LootContextParams.DAMAGE_SOURCE, player.getLevel().damageSources().playerAttack(player))
-            .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
-            .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player)
-            .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
-            .withLuck(player.getLuck())
-            .create(LootContextParamSets.ENTITY);
-    }
-
-    private static boolean isSpecialMap(final @Nullable ItemStack stack) {
-        return stack != null && stack.getType() == Material.MAP && stack.getItemMeta().getPersistentDataContainer().has(IS_MAP, PersistentDataType.BYTE);
-    }
-
 }

@@ -57,12 +57,9 @@ import org.apache.commons.io.file.PathUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.intellij.lang.annotations.Subst;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.Style.style;
-
 public final class DatapackOverride {
 
-    private static final String DATAPACK_NAME = "TreasureMapsPlus";
+    public static final String DATAPACK_NAME = "TreasureMapsPlus";
     private static final Gson GSON = Deserializers.createLootTableSerializer()
         .registerTypeAdapterFactory(new OverrideAdapterFactory())
         .setPrettyPrinting()
@@ -85,7 +82,7 @@ public final class DatapackOverride {
     private DatapackOverride() {
     }
 
-    static Set<Key> setup(final boolean replaceLootTables) throws Exception {
+    public static Set<Key> setup(final boolean replaceLootTables) throws Exception {
         final Set<Key> keys = createDatapack(replaceLootTables);
 
         Utils.getServer().getPackRepository().reload();
