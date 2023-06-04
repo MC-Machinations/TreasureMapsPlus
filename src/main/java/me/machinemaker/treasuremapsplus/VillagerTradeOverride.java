@@ -24,7 +24,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import me.machinemaker.mirror.paper.PaperMirror;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -38,6 +37,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
+import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 
 import static me.machinemaker.treasuremapsplus.Utils.sneaky;
 import static net.kyori.adventure.text.Component.translatable;
@@ -46,16 +46,29 @@ public final class VillagerTradeOverride {
 
     private static final Logger LOGGER = LogUtils.getClassLogger();
 
-    private static final Class<?> TREASURE_MAP_TRADE_LISTING_CLASS = PaperMirror.findMinecraftClass(
-        "world.entity.npc.VillagerTrades$TreasureMapForEmeralds",
-        "world.entity.npc.VillagerTrades$k"
-    );
-    private static final MethodHandles.Lookup LOOKUP = sneaky(() -> MethodHandles.privateLookupIn(TREASURE_MAP_TRADE_LISTING_CLASS, MethodHandles.lookup()));
-    private static final MethodHandle EMERALD_COST = sneaky(() -> LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, "emeraldCost", int.class));
-    private static final MethodHandle DESTINATION = sneaky(() -> LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, "destination", TagKey.class));
-    private static final MethodHandle DISPLAY_NAME = sneaky(() -> LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, "displayName", String.class));
-    private static final MethodHandle MAX_USES = sneaky(() -> LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, "maxUses", int.class));
-    private static final MethodHandle VILLAGER_XP = sneaky(() -> LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, "villagerXp", int.class));
+    private static final class Reflection {
+        private static final ReflectionRemapper REMAPPER = ReflectionRemapper.forReobfMappingsInPaperJar();
+
+        private static final Class<?> TREASURE_MAP_TRADE_LISTING_CLASS = sneaky(() -> Class.forName(REMAPPER.remapClassName("net.minecraft.world.entity.npc.VillagerTrades$TreasureMapForEmeralds")));
+        private static final MethodHandles.Lookup LOOKUP = sneaky(() -> MethodHandles.privateLookupIn(TREASURE_MAP_TRADE_LISTING_CLASS, MethodHandles.lookup()));
+
+        private static final MethodHandle EMERALD_COST = getter("emeraldCost", int.class);
+        private static final MethodHandle DESTINATION = getter("destination", TagKey.class);
+        private static final MethodHandle DISPLAY_NAME = getter("displayName", String.class);
+        private static final MethodHandle MAX_USES = getter("maxUses", int.class);
+        private static final MethodHandle VILLAGER_XP = getter("villagerXp", int.class);
+
+        private Reflection() {
+        }
+
+        private static MethodHandle getter(final String mojMapFieldName, final Class<?> fieldType) {
+            try {
+                return LOOKUP.findGetter(TREASURE_MAP_TRADE_LISTING_CLASS, REMAPPER.remapFieldName(TREASURE_MAP_TRADE_LISTING_CLASS, mojMapFieldName), fieldType);
+            } catch (final ReflectiveOperationException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
 
     private VillagerTradeOverride() {
     }
@@ -65,7 +78,7 @@ public final class VillagerTradeOverride {
         for (final VillagerTrades.ItemListing[] listings : cartographer.values()) {
             for (int i = 0; i < listings.length; i++) {
                 final VillagerTrades.ItemListing listing = listings[i];
-                if (TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(listing)) {
+                if (Reflection.TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(listing)) {
                     listings[i] = createOverride(listing, replaceMonument, replaceMansion);
                 }
             }
@@ -73,7 +86,7 @@ public final class VillagerTradeOverride {
     }
 
     private static VillagerTrades.ItemListing createOverride(final VillagerTrades.ItemListing original, final boolean replaceBuriedTreasure, final boolean replaceMansion) {
-        final String name = (String) sneaky(() -> DISPLAY_NAME.invoke(original));
+        final String name = (String) sneaky(() -> Reflection.DISPLAY_NAME.invoke(original));
         if (name.endsWith("monument")) {
             return replaceBuriedTreasure ? new OverrideListing(original) : original;
         } else if (name.endsWith("mansion")) {
@@ -98,17 +111,17 @@ public final class VillagerTradeOverride {
                 final ItemStack map = new ItemStack(Items.MAP);
                 final org.bukkit.inventory.ItemStack bukkitStack = Utils.getBukkitStackMirror(map);
                 final ItemMeta meta = bukkitStack.getItemMeta();
-                meta.displayName(translatable((String) DISPLAY_NAME.invoke(this.original)));
+                meta.displayName(translatable((String) Reflection.DISPLAY_NAME.invoke(this.original)));
                 meta.lore(List.of(TreasureMapsPlus.LORE));
                 meta.getPersistentDataContainer().set(TreasureMapsPlus.IS_MAP, PersistentDataType.BYTE, (byte) 1);
-                meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, ((TagKey<Structure>) DESTINATION.invoke(this.original)).location().toString());
+                meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, ((TagKey<Structure>) Reflection.DESTINATION.invoke(this.original)).location().toString());
                 bukkitStack.setItemMeta(meta);
                 return new MerchantOffer(
-                    new ItemStack(Items.EMERALD, (int) EMERALD_COST.invoke(this.original)),
+                    new ItemStack(Items.EMERALD, (int) Reflection.EMERALD_COST.invoke(this.original)),
                     new ItemStack(Items.COMPASS),
                     map,
-                    (int) MAX_USES.invoke(this.original),
-                    (int) VILLAGER_XP.invoke(this.original),
+                    (int) Reflection.MAX_USES.invoke(this.original),
+                    (int) Reflection.VILLAGER_XP.invoke(this.original),
                     PRICE_MULTIPLIER
                 );
             } catch (final Throwable throwable) {

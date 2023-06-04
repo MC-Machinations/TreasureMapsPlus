@@ -40,14 +40,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.kyori.adventure.key.Key;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -86,7 +89,7 @@ public final class DatapackOverride {
         final Set<Key> keys = createDatapack(replaceLootTables);
 
         Utils.getServer().getPackRepository().reload();
-        final Collection<String> selected = Utils.getServer().getPackRepository().getSelectedIds();
+        final Collection<String> selected = Utils.getServer().getPackRepository().getSelectedPacks().stream().map(Pack::getId).collect(Collectors.toCollection(ArrayList::new));
         if (!selected.contains("file/" + DATAPACK_NAME)) {
             selected.add("file/" + DATAPACK_NAME);
         }

@@ -44,14 +44,21 @@ import static java.lang.invoke.MethodType.methodType;
 
 public final class Utils {
 
-    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-    private static final MethodHandle CRAFT_PLAYER_GET_HANDLE;
-    private static final MethodHandle CRAFT_ITEM_STACK_AS_BUKKIT_COPY;
-    static {
-        final Class<?> craftPlayerClass = PaperMirror.getCraftBukkitClass("entity.CraftPlayer");
-        CRAFT_PLAYER_GET_HANDLE = sneaky(() -> LOOKUP.findVirtual(craftPlayerClass, "getHandle", methodType(ServerPlayer.class)));
-        final Class<?> craftItemStackClass = PaperMirror.getCraftBukkitClass("inventory.CraftItemStack");
-        CRAFT_ITEM_STACK_AS_BUKKIT_COPY = sneaky(() -> LOOKUP.findStatic(craftItemStackClass, "asCraftMirror", methodType(craftItemStackClass, net.minecraft.world.item.ItemStack.class)));
+    private static final class Reflection {
+
+        private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+        private static final MethodHandle CRAFT_PLAYER_GET_HANDLE;
+        private static final MethodHandle CRAFT_ITEM_STACK_AS_BUKKIT_COPY;
+
+        static {
+            final Class<?> craftPlayerClass = PaperMirror.getCraftBukkitClass("entity.CraftPlayer");
+            CRAFT_PLAYER_GET_HANDLE = sneaky(() -> LOOKUP.findVirtual(craftPlayerClass, "getHandle", methodType(ServerPlayer.class)));
+            final Class<?> craftItemStackClass = PaperMirror.getCraftBukkitClass("inventory.CraftItemStack");
+            CRAFT_ITEM_STACK_AS_BUKKIT_COPY = sneaky(() -> LOOKUP.findStatic(craftItemStackClass, "asCraftMirror", methodType(craftItemStackClass, net.minecraft.world.item.ItemStack.class)));
+        }
+
+        private Reflection() {
+        }
     }
 
     private Utils() {
@@ -62,11 +69,11 @@ public final class Utils {
     }
 
     public static ServerPlayer getNmsPlayer(final Player player) {
-        return (ServerPlayer) sneaky(() -> CRAFT_PLAYER_GET_HANDLE.invoke(player));
+        return (ServerPlayer) sneaky(() -> Reflection.CRAFT_PLAYER_GET_HANDLE.invoke(player));
     }
 
     public static ItemStack getBukkitStackMirror(final net.minecraft.world.item.ItemStack stack) {
-        return (ItemStack) sneaky(() -> CRAFT_ITEM_STACK_AS_BUKKIT_COPY.invoke(stack));
+        return (ItemStack) sneaky(() -> Reflection.CRAFT_ITEM_STACK_AS_BUKKIT_COPY.invoke(stack));
     }
 
     public static BlockPos toBlockPosition(final Location loc) {

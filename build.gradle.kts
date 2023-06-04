@@ -11,16 +11,18 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.2.0"
+version = "0.2.1"
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
     paperweight.paperDevBundle(libs.versions.paper)
     implementation(libs.mirror)
+    implementation(libs.reflectionRemapper)
 
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
@@ -55,7 +57,7 @@ tasks {
     processResources {
         filteringCharset = Charsets.UTF_8.toString()
         filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
-            expand("version" to project.version)
+            expand("version" to version)
         }
     }
 
@@ -63,7 +65,7 @@ tasks {
         useJUnitPlatform()
     }
 
-    withType<RunServer> {
+    withType<RunServer> { // set for both runServer and runMojangMappedServer
         systemProperty("com.mojang.eula.agree", "true")
     }
 

@@ -1,9 +1,10 @@
 [versions]
 paper = "1.19.4-R0.1-SNAPSHOT"
 junit = "5.9.1"
-mirror = "0.1.1"
+mirror = "0.1.2"
+reflectionRemapper = "0.1.0-SNAPSHOT"
 
-paperweight = "1.5.3"
+paperweight = "1.5.5"
 runPaper = "2.0.1"
 shadow = "8.1.1"
 spotless = "6.17.0"
@@ -12,6 +13,7 @@ spotless = "6.17.0"
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 mirror = { module = "me.machinemaker.mirror:mirror-paper", version.ref = "mirror" }
+reflectionRemapper = { module = "xyz.jpenilla:reflection-remapper", version.ref = "reflectionRemapper" }
 
 [plugins]
 paper-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
