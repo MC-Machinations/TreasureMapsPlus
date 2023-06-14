@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.2.1"
+version = "0.3.0"
 
 repositories {
     mavenCentral()
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle(libs.versions.paper)
+    paperweight.paperDevBundle(libs.versions.minecraft.map { "$it-R0.1-SNAPSHOT" })
     implementation(libs.mirror)
     implementation(libs.reflectionRemapper)
 
@@ -56,7 +56,7 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.toString()
-        filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
+        filesMatching("paper-plugin.yml") {
             expand("version" to version)
         }
     }
@@ -70,6 +70,6 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.19.4")
+        minecraftVersion(libs.versions.minecraft.get())
     }
 }

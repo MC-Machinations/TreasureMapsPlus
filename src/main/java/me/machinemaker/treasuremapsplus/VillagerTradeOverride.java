@@ -104,7 +104,7 @@ public final class VillagerTradeOverride {
         @SuppressWarnings("unchecked")
         @Override
         public @Nullable MerchantOffer getOffer(final Entity entity, final RandomSource random) {
-            if (!entity.getLevel().paperConfig().environment.treasureMaps.enabled) {
+            if (!entity.level().paperConfig().environment.treasureMaps.enabled) {
                 return null;
             }
             try {

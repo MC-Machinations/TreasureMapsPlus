@@ -32,7 +32,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -91,28 +91,27 @@ public final class PlayerInteract implements Listener {
             lootTable = BuiltInLootTables.BURIED_TREASURE;
         }
 
-        final LootContext context = isChest ? createChestContext(player) : createEntityContext(player);
+        final LootParams params = isChest ? createChestParams(player) : createEntityParams(player);
         final List<net.minecraft.world.item.ItemStack> items = new ArrayList<>();
-        Utils.getServer().getLootTables().get(lootTable).getRandomItems(context, items::add);
+        Utils.getServer().getLootData().getLootTable(lootTable).getRandomItems(params, items::add);
         return items;
 
     }
 
-    private static LootContext createChestContext(final ServerPlayer player) {
-        return new LootContext.Builder(player.getLevel())
+    private static LootParams createChestParams(final ServerPlayer player) {
+        return new LootParams.Builder(player.serverLevel())
             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(player.blockPosition()))
-            .withLuck(player.getLuck())
             .withParameter(LootContextParams.THIS_ENTITY, player)
+            .withLuck(player.getLuck())
             .create(LootContextParamSets.CHEST);
     }
 
-    private static LootContext createEntityContext(final ServerPlayer player) {
-        final ElderGuardian guardian = new ElderGuardian(EntityType.ELDER_GUARDIAN, player.getLevel());
-        return new LootContext.Builder(player.getLevel())
-            .withRandom(guardian.getRandom())
+    private static LootParams createEntityParams(final ServerPlayer player) {
+        final ElderGuardian guardian = new ElderGuardian(EntityType.ELDER_GUARDIAN, player.level());
+        return new LootParams.Builder(player.serverLevel())
             .withParameter(LootContextParams.THIS_ENTITY, guardian)
             .withParameter(LootContextParams.ORIGIN, player.position())
-            .withParameter(LootContextParams.DAMAGE_SOURCE, player.getLevel().damageSources().playerAttack(player))
+            .withParameter(LootContextParams.DAMAGE_SOURCE, player.serverLevel().damageSources().playerAttack(player))
             .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
             .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player)
             .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
