@@ -72,4 +72,10 @@ tasks {
     runServer {
         minecraftVersion(libs.versions.minecraft.get())
     }
+
+    create("printVersion") {
+        doFirst {
+            println(version)
+        }
+    }
 }
