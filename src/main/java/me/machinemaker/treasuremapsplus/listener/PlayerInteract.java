@@ -61,7 +61,7 @@ public final class PlayerInteract implements Listener {
             final ServerPlayer serverPlayer = Utils.getNmsPlayer(event.getPlayer());
             final List<net.minecraft.world.item.ItemStack> randomItems = rollLootTable(event.getItem(), serverPlayer);
             if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                event.getItem().setAmount(0);
+                event.getItem().setAmount(event.getItem().getAmount() - 1);
             }
             for (final net.minecraft.world.item.ItemStack randomItem : randomItems) {
                 event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), Utils.getBukkitStackMirror(randomItem.copy()), item1 -> {
