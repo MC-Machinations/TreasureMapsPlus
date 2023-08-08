@@ -5,7 +5,7 @@ mirror = "0.1.2"
 reflectionRemapper = "0.1.0-SNAPSHOT"
 
 paperweight = "1.5.5"
-runPaper = "2.0.1"
+runPaper = "2.1.0"
 shadow = "8.1.1"
 spotless = "6.17.0"
 
