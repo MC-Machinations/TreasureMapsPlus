@@ -49,6 +49,11 @@ tasks {
         dependsOn(reobfJar)
     }
 
+    shadowJar {
+        isEnableRelocation = true
+        relocationPrefix = "me.machinemaker.treasuremapsplus.libs"
+    }
+
     compileJava {
         options.release.set(17)
         options.encoding = Charsets.UTF_8.toString()
