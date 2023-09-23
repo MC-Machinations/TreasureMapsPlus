@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.level.storage.LevelResource;
+import org.apache.commons.io.file.PathUtils;
 
 public final class DatapackOverride {
 
@@ -38,7 +39,9 @@ public final class DatapackOverride {
     public static void deleteLeftoversAndReload() throws Exception {
         // datapack was only useful pre 1.20.1
         final Path datapackDir = Utils.getServer().storageSource.getLevelPath(LevelResource.DATAPACK_DIR).resolve(DATAPACK_NAME);
-        Files.deleteIfExists(datapackDir);
+        if (Files.exists(datapackDir)) {
+            PathUtils.deleteDirectory(datapackDir);
+        }
 
         Utils.getServer().getPackRepository().reload();
         final Collection<String> selected = Utils.getServer().getPackRepository().getSelectedPacks().stream().map(Pack::getId).collect(Collectors.toCollection(ArrayList::new));

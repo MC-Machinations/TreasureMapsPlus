@@ -14,7 +14,7 @@ group = "me.machinemaker"
 version = "0.4.0"
 
 repositories {
-    mavenLocal() {
+    mavenLocal {
         mavenContent {
             includeModule("io.papermc.paper", "paper-api")
         }

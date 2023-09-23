@@ -17,14 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package me.machinemaker.treasuremapsplus;
+package me.machinemaker.treasuremapsplus.villager;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ReflectionTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class VillagerTradeOverrideTest {
 
     @BeforeAll
     static void init() {
@@ -34,6 +36,6 @@ class ReflectionTest {
 
     @Test
     void testVillagerOverrideReflection() {
-        VillagerTradeOverride.setup(true, true);
+        assertEquals(/* cartographer */2 + /* experimental cartographers */2, VillagerTradeOverride.setup(true, true));
     }
 }

@@ -27,8 +27,8 @@ import java.util.Map;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 
 public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey, ResourceKey<T> resourceKey, T value) {
@@ -56,8 +56,8 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
     }
 
 
-    public void override() {
-        final Registry<T> registry = MinecraftServer.getServer().registryAccess().registryOrThrow(this.registryKey);
+    public void override(final RegistryAccess access) {
+        final Registry<T> registry = access.registryOrThrow(this.registryKey);
         final Holder.Reference<T> holder = registry.getHolderOrThrow(this.resourceKey);
         final T oldValue = holder.value();
         final int id = registry.getId(oldValue);
