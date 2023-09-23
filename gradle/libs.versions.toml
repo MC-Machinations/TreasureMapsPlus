@@ -1,10 +1,10 @@
 [versions]
-minecraft = "1.20.1"
+minecraft = "1.20.2"
 junit = "5.9.1"
 mirror = "0.1.2"
 reflectionRemapper = "0.1.0-SNAPSHOT"
 
-paperweight = "1.5.5"
+paperweight = "1.5.6"
 runPaper = "2.1.0"
 shadow = "8.1.1"
 spotless = "6.17.0"
