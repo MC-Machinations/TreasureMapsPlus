@@ -25,6 +25,7 @@ import me.machinemaker.treasuremapsplus.listener.PlayerInteract;
 import me.machinemaker.treasuremapsplus.loot.ExplorationMapItemFunctionOverride;
 import me.machinemaker.treasuremapsplus.villager.VillagerTradeOverride;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.NamespacedKey;
@@ -72,7 +73,7 @@ public final class TreasureMapsPlus extends JavaPlugin {
         if (list.isEmpty()) {
             return Collections.emptyList();
         }
-        return list.stream().map(MiniMessage.miniMessage()::deserialize).toList();
+        return list.stream().map(MiniMessage.miniMessage()::deserialize).map(c -> c.applyFallbackStyle(TextDecoration.ITALIC.withState(false))).toList();
     }
 
     public List<Component> getMapUseLore() {
