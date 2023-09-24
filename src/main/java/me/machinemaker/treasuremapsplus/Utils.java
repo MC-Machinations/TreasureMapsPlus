@@ -80,6 +80,7 @@ public final class Utils {
         }
     }
 
+    @FunctionalInterface
     public interface CheckedSupplier<T, E extends Throwable> {
 
         T get() throws E;

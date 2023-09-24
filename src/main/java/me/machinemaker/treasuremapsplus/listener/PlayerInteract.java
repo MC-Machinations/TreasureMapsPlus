@@ -64,9 +64,11 @@ public final class PlayerInteract implements Listener {
                 event.getItem().setAmount(event.getItem().getAmount() - 1);
             }
             for (final net.minecraft.world.item.ItemStack randomItem : randomItems) {
-                event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), Utils.getBukkitStackMirror(randomItem.copy()), item1 -> {
-                    item1.setPickupDelay(0);
-                });
+                event.getPlayer().getWorld().dropItem(
+                    event.getPlayer().getLocation(),
+                    Utils.getBukkitStackMirror(randomItem.copy()),
+                    item1 -> item1.setPickupDelay(0)
+                );
             }
         }
     }

@@ -11,3 +11,11 @@ replace:
     monument: true
     # Replace mansion map offers from villagers
     mansion: false
+
+# Configure messages for the plugin
+messages:
+  # Configure messages relating to the map
+  map:
+    # Configure the lore added to maps that can be used to get the treasure
+    use:
+      - <green>Use to receive treasure!

@@ -19,6 +19,7 @@
  */
 package me.machinemaker.treasuremapsplus.loot;
 
+import java.util.Collections;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,7 +41,7 @@ class ExplorationMapFunctionOverrideTest {
 
     @Test
     void testFunctionOverride() {
-        final ExplorationMapItemFunctionOverride override = new ExplorationMapItemFunctionOverride(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), true);
+        final ExplorationMapItemFunctionOverride override = new ExplorationMapItemFunctionOverride(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), Collections.emptyList(), true);
         final LootItemFunctionType replacementValue = override.registryOverride.value();
         final LootItemFunctionType oldValue = LootItemFunctions.EXPLORATION_MAP;
         assertEquals(oldValue, BuiltInRegistries.LOOT_FUNCTION_TYPE.getOrThrow(ExplorationMapItemFunctionOverride.EXPLORATION_FUNCTION_KEY), "the value in the registry didn't match the value in the field");

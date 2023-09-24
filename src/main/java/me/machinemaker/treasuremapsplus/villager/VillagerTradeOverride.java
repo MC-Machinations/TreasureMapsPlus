@@ -19,13 +19,16 @@
  */
 package me.machinemaker.treasuremapsplus.villager;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import me.machinemaker.treasuremapsplus.TreasureMapsPlus;
 import me.machinemaker.treasuremapsplus.Utils;
+import net.kyori.adventure.text.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -34,9 +37,9 @@ import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
@@ -44,7 +47,7 @@ import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import static me.machinemaker.treasuremapsplus.Utils.sneaky;
 import static net.kyori.adventure.text.Component.translatable;
 
-public final class VillagerTradeOverride {
+public class VillagerTradeOverride {
 
     private static final Logger LOGGER = LogUtils.getClassLogger();
     private static final Class<?> TREASURE_MAP_TRADE_LISTING_CLASS;
@@ -71,17 +74,29 @@ public final class VillagerTradeOverride {
         TYPE_SPECIFIC_TRADE_PROXY = factory.reflectionProxy(TypeSpecificTradeProxy.class);
     }
 
-    private VillagerTradeOverride() {
+    private final List<Component> lore;
+    private final boolean replaceMonuments;
+    private final boolean replaceMansions;
+
+    public VillagerTradeOverride(final TreasureMapsPlus plugin) {
+        this(plugin.getMapUseLore(), plugin.shouldReplaceMonuments(), plugin.shouldReplaceMansions());
     }
 
-    public static int setup(final boolean replaceMonument, final boolean replaceMansion) {
+    @VisibleForTesting
+    VillagerTradeOverride(final List<Component> lore, final boolean replaceMonuments, final boolean replaceMansions) {
+        this.lore = lore;
+        this.replaceMonuments = replaceMonuments;
+        this.replaceMansions = replaceMansions;
+    }
+
+    public int override() {
         int changed = 0;
         for (final Collection<VillagerTrades.ItemListing[]> tradeSet : TRADE_SETS) {
             for (final VillagerTrades.ItemListing[] listings : tradeSet) {
                 for (int i = 0; i < listings.length; i++) {
                     final VillagerTrades.ItemListing listing = listings[i];
                     if (TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(listing)) {
-                        final VillagerTrades.ItemListing override = createOverride(listing, replaceMonument, replaceMansion);
+                        final VillagerTrades.ItemListing override = this.createOverride(listing);
                         if (listing != override) {
                             changed++;
                         }
@@ -93,7 +108,7 @@ public final class VillagerTradeOverride {
                             if (!(TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(entry.getValue()))) {
                                 newBuilder.put(entry);
                             } else {
-                                final VillagerTrades.ItemListing override = createOverride(entry.getValue(), replaceMonument, replaceMansion);
+                                final VillagerTrades.ItemListing override = this.createOverride(entry.getValue());
                                 if (entry.getValue() != override) {
                                     changed++;
                                 }
@@ -109,15 +124,15 @@ public final class VillagerTradeOverride {
         return changed;
     }
 
-    private static VillagerTrades.ItemListing createOverride(final VillagerTrades.ItemListing original, final boolean replaceBuriedTreasure, final boolean replaceMansion) {
+    private VillagerTrades.ItemListing createOverride(final VillagerTrades.ItemListing original) {
         if (original instanceof OverrideListing) {
             return original;
         }
         final String name = TREASURE_MAP_PROXY.displayName(original);
         if (name.endsWith("monument")) {
-            return replaceBuriedTreasure ? new OverrideListing(original) : original;
+            return this.replaceMonuments ? new OverrideListing(original, this::createStack) : original;
         } else if (name.endsWith("mansion")) {
-            return replaceMansion ? new OverrideListing(original) : original;
+            return this.replaceMansions ? new OverrideListing(original, this::createStack) : original;
         } else if (name.startsWith("filled_map.village_") || name.startsWith("filled_map.explorer_")) {
             // skip these maps, no point in replacing them, it defeats their whole purpose
             return original;
@@ -127,7 +142,20 @@ public final class VillagerTradeOverride {
         }
     }
 
-    private record OverrideListing(VillagerTrades.ItemListing original) implements VillagerTrades.ItemListing {
+    private ItemStack createStack(final VillagerTrades.ItemListing listing) {
+        final ItemStack map = new ItemStack(Items.MAP);
+        final org.bukkit.inventory.ItemStack bukkitStack = Utils.getBukkitStackMirror(map);
+        final boolean edited = bukkitStack.editMeta(meta -> {
+            meta.displayName(translatable(TREASURE_MAP_PROXY.displayName(listing)));
+            meta.lore(this.lore);
+            meta.getPersistentDataContainer().set(TreasureMapsPlus.IS_MAP, PersistentDataType.BYTE, (byte) 1);
+            meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, TREASURE_MAP_PROXY.destination(listing).location().toString());
+        });
+        Preconditions.checkState(edited, "Could not edit itemstack meta");
+        return map;
+    }
+
+    private record OverrideListing(VillagerTrades.ItemListing original, Function<VillagerTrades.ItemListing, ItemStack> mapStackCreator) implements VillagerTrades.ItemListing {
 
         private static final float PRICE_MULTIPLIER = 0.2f;
 
@@ -136,18 +164,10 @@ public final class VillagerTradeOverride {
             if (!entity.level().paperConfig().environment.treasureMaps.enabled) {
                 return null;
             }
-            final ItemStack map = new ItemStack(Items.MAP);
-            final org.bukkit.inventory.ItemStack bukkitStack = Utils.getBukkitStackMirror(map);
-            final ItemMeta meta = bukkitStack.getItemMeta();
-            meta.displayName(translatable(TREASURE_MAP_PROXY.displayName(this.original)));
-            meta.lore(List.of(TreasureMapsPlus.LORE));
-            meta.getPersistentDataContainer().set(TreasureMapsPlus.IS_MAP, PersistentDataType.BYTE, (byte) 1);
-            meta.getPersistentDataContainer().set(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING, TREASURE_MAP_PROXY.destination(this.original).location().toString());
-            bukkitStack.setItemMeta(meta);
             return new MerchantOffer(
                 new ItemStack(Items.EMERALD, TREASURE_MAP_PROXY.emeraldCost(this.original)),
                 new ItemStack(Items.COMPASS),
-                map,
+                this.mapStackCreator.apply(this.original),
                 TREASURE_MAP_PROXY.maxUses(this.original),
                 TREASURE_MAP_PROXY.villagerXp(this.original),
                 PRICE_MULTIPLIER
