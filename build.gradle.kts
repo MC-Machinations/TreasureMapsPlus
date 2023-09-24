@@ -14,21 +14,13 @@ group = "me.machinemaker"
 version = "0.4.0"
 
 repositories {
-    mavenLocal {
-        mavenContent {
-            includeModule("io.papermc.paper", "paper-api")
-        }
-    }
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
-    paperweight.paperDevBundle(libs.versions.minecraft.map { "$it-R0.1-SNAPSHOT" }) {
-        exclude("io.papermc.paper", "paper-api")
-    }
+    paperweight.paperDevBundle(libs.versions.minecraft.map { "$it-R0.1-SNAPSHOT" })
     implementation(libs.mirror)
     implementation(libs.reflectionRemapper)
 
