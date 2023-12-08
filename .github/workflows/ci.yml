@@ -53,3 +53,15 @@ jobs:
             TreasureMapsPlus.jar.sha256
             LICENSE
             README.md
+
+      - name: Generate Build Summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const run_id = context.runId;
+
+            core.summary
+              .addHeading('Download', 3)
+              .addLink('TreasureMapsPlus.zip', `https://nightly.link/${owner}/${repo}/actions/runs/${run_id}/TreasureMapsPlus.zip`)
+              .write();
