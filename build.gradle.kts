@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.4.0"
+version = "0.5.0"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,7 @@ java {
 checkstyle {
     configDirectory.set(rootProject.file(".checkstyle"))
     isShowViolations = true
-    toolVersion = "10.12.3"
+    toolVersion = "10.12.5"
 }
 
 spotless {

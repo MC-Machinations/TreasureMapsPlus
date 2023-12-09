@@ -20,7 +20,7 @@
 package me.machinemaker.treasuremapsplus;
 
 import com.mojang.serialization.Lifecycle;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -43,7 +43,7 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
         try {
             final ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
             final MethodHandles.Lookup mappedRegistryLookup = MethodHandles.privateLookupIn(MappedRegistry.class, MethodHandles.lookup());
-            TO_ID_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "toId"), Reference2IntOpenHashMap.class);
+            TO_ID_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "toId"), Reference2IntMap.class);
             BY_VALUE_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "byValue"), Map.class);
             LIFECYCLES_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "lifecycles"), Map.class);
 
@@ -70,7 +70,7 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
     @SuppressWarnings("unchecked")
     private static <T> void swapToIdMap(final Registry<T> registry, final int id, final T oldValue, final T newValue) {
         try {
-            final Reference2IntOpenHashMap<T> map = (Reference2IntOpenHashMap<T>) TO_ID_MAP.invoke(registry);
+            final Reference2IntMap<T> map = (Reference2IntMap<T>) TO_ID_MAP.invoke(registry);
             map.put(newValue, id);
             map.remove(oldValue, id);
         } catch (final Throwable e) {
