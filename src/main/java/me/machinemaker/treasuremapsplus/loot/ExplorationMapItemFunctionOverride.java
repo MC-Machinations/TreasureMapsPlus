@@ -21,7 +21,6 @@ package me.machinemaker.treasuremapsplus.loot;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.papermc.paper.adventure.PaperAdventure;
 import java.util.List;
@@ -47,7 +46,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 public class ExplorationMapItemFunctionOverride {
 
     @VisibleForTesting
-    static final ResourceKey<LootItemFunctionType> EXPLORATION_FUNCTION_KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, new ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, "exploration_map"));
+    static final ResourceKey<LootItemFunctionType<?>> EXPLORATION_FUNCTION_KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, new ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, "exploration_map"));
     private static final LootItemFunction.Builder SET_PDC_FUNCTION;
 
     static {
@@ -61,7 +60,7 @@ public class ExplorationMapItemFunctionOverride {
 
 
     @VisibleForTesting
-    final RegistryOverride<LootItemFunctionType> registryOverride;
+    final RegistryOverride<LootItemFunctionType<?>> registryOverride;
     private final RegistryAccess access;
     private final List<Component> lore;
     private final boolean replaceChests;
@@ -72,17 +71,16 @@ public class ExplorationMapItemFunctionOverride {
     }
 
     @VisibleForTesting
-    @SuppressWarnings("unchecked")
     ExplorationMapItemFunctionOverride(final RegistryAccess registryAccess, final List<Component> lore, final boolean replaceChests) {
         this.access = registryAccess;
         this.lore = lore;
         this.replaceChests = replaceChests;
-        final MapCodec.MapCodecCodec<ExplorationMapFunction> mapCodecCodec = (MapCodec.MapCodecCodec<ExplorationMapFunction>) LootItemFunctions.EXPLORATION_MAP.codec();
-        final Codec<? extends LootItemFunction> replacementCodec = mapCodecCodec.codec().xmap(this::createSequenceFunction, this::retrieveExplorationFunction).codec();
+        final MapCodec<ExplorationMapFunction> mapCodecCodec = LootItemFunctions.EXPLORATION_MAP.codec();
+        final MapCodec<? extends LootItemFunction> replacementCodec = mapCodecCodec.xmap(this::createSequenceFunction, this::retrieveExplorationFunction);
         this.registryOverride = new RegistryOverride<>(
             Registries.LOOT_FUNCTION_TYPE,
             EXPLORATION_FUNCTION_KEY,
-            new LootItemFunctionType(replacementCodec));
+            new LootItemFunctionType<>(replacementCodec));
     }
 
     public void override() {

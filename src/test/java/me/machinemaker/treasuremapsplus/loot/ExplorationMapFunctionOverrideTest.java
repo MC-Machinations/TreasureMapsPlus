@@ -42,8 +42,8 @@ class ExplorationMapFunctionOverrideTest {
     @Test
     void testFunctionOverride() {
         final ExplorationMapItemFunctionOverride override = new ExplorationMapItemFunctionOverride(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), Collections.emptyList(), true);
-        final LootItemFunctionType replacementValue = override.registryOverride.value();
-        final LootItemFunctionType oldValue = LootItemFunctions.EXPLORATION_MAP;
+        final LootItemFunctionType<?> replacementValue = override.registryOverride.value();
+        final LootItemFunctionType<?> oldValue = LootItemFunctions.EXPLORATION_MAP;
         assertEquals(oldValue, BuiltInRegistries.LOOT_FUNCTION_TYPE.getOrThrow(ExplorationMapItemFunctionOverride.EXPLORATION_FUNCTION_KEY), "the value in the registry didn't match the value in the field");
         override.override();
         assertEquals(replacementValue, BuiltInRegistries.LOOT_FUNCTION_TYPE.getOrThrow(ExplorationMapItemFunctionOverride.EXPLORATION_FUNCTION_KEY), "the replacement value wasn't found in the registry");

@@ -19,7 +19,6 @@
  */
 package me.machinemaker.treasuremapsplus;
 
-import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -35,7 +34,6 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
 
     private static final MethodHandle TO_ID_MAP;
     private static final MethodHandle BY_VALUE_MAP;
-    private static final MethodHandle LIFECYCLES_MAP;
 
     private static final MethodHandle SET_HOLDER_VALUE;
 
@@ -45,7 +43,6 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
             final MethodHandles.Lookup mappedRegistryLookup = MethodHandles.privateLookupIn(MappedRegistry.class, MethodHandles.lookup());
             TO_ID_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "toId"), Reference2IntMap.class);
             BY_VALUE_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "byValue"), Map.class);
-            LIFECYCLES_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "lifecycles"), Map.class);
 
             final MethodHandles.Lookup referenceHolderLookup = MethodHandles.privateLookupIn(Holder.Reference.class, MethodHandles.lookup());
             SET_HOLDER_VALUE = referenceHolderLookup.findSetter(Holder.Reference.class, remapper.remapFieldName(Holder.Reference.class, "value"), Object.class);
@@ -63,7 +60,6 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
         final int id = registry.getId(oldValue);
         swapToIdMap(registry, id, oldValue, this.value());
         swapByValueMap(registry, holder, oldValue, this.value());
-        swapLifecyclesMap(registry, oldValue, this.value());
         swapInHolder(holder, this.value());
     }
 
@@ -86,17 +82,6 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
             map.put(newValue, holder);
         } catch (final Throwable e) {
             throw new RuntimeException("Could not get byValue map from " + registry, e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> void swapLifecyclesMap(final Registry<T> registry, final T oldValue, final T newValue) {
-        try {
-            final Map<T, Lifecycle> map = (Map<T, Lifecycle>) LIFECYCLES_MAP.invoke(registry);
-            map.remove(oldValue);
-            map.put(newValue, Lifecycle.experimental());
-        } catch (final Throwable e) {
-            throw new RuntimeException("Could not get lifecycles map from " + registry, e);
         }
     }
 

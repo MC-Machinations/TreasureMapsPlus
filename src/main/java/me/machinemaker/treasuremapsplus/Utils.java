@@ -27,7 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
+import net.minecraft.world.level.storage.loot.functions.SetCustomDataFunction;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,7 +69,7 @@ public final class Utils {
 
     @SuppressWarnings("deprecation")
     public static LootItemFunction.Builder createSetNbtFunction(final CompoundTag tag) {
-        return SetNbtFunction.setTag(tag);
+        return SetCustomDataFunction.setCustomData(tag);
     }
 
     public static <T, E extends Throwable> T sneaky(final CheckedSupplier<T, E> supplier) {

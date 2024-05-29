@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.5.0"
+version = "0.6.0"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 checkstyle {
@@ -55,7 +55,7 @@ tasks {
     }
 
     compileJava {
-        options.release.set(17)
+        options.release.set(21)
         options.encoding = Charsets.UTF_8.toString()
     }
 
@@ -74,7 +74,7 @@ tasks {
         systemProperty("com.mojang.eula.agree", "true")
 
         downloadPlugins {
-            url("https://download.luckperms.net/1526/bukkit/loader/LuckPerms-Bukkit-5.4.113.jar")
+            url("https://download.luckperms.net/1543/bukkit/loader/LuckPerms-Bukkit-5.4.130.jar")
         }
     }
 

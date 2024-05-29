@@ -25,6 +25,7 @@ import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import me.machinemaker.treasuremapsplus.TreasureMapsPlus;
 import me.machinemaker.treasuremapsplus.Utils;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -133,7 +135,7 @@ public class VillagerTradeOverride {
             return this.replaceMonuments ? new OverrideListing(original, this::createStack) : original;
         } else if (name.endsWith("mansion")) {
             return this.replaceMansions ? new OverrideListing(original, this::createStack) : original;
-        } else if (name.startsWith("filled_map.village_") || name.startsWith("filled_map.explorer_")) {
+        } else if (name.startsWith("filled_map.village_") || name.startsWith("filled_map.explorer_") || name.endsWith(".trial_chambers")) {
             // skip these maps, no point in replacing them, it defeats their whole purpose
             return original;
         } else {
@@ -165,8 +167,8 @@ public class VillagerTradeOverride {
                 return null;
             }
             return new MerchantOffer(
-                new ItemStack(Items.EMERALD, TREASURE_MAP_PROXY.emeraldCost(this.original)),
-                new ItemStack(Items.COMPASS),
+                new ItemCost(Items.EMERALD, TREASURE_MAP_PROXY.emeraldCost(this.original)),
+                Optional.of(new ItemCost(Items.COMPASS)),
                 this.mapStackCreator.apply(this.original),
                 TREASURE_MAP_PROXY.maxUses(this.original),
                 TREASURE_MAP_PROXY.villagerXp(this.original),

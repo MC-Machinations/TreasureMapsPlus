@@ -22,14 +22,13 @@ package me.machinemaker.treasuremapsplus;
 import java.util.Collections;
 import java.util.List;
 import me.machinemaker.treasuremapsplus.listener.PlayerInteract;
-import me.machinemaker.treasuremapsplus.loot.ExplorationMapItemFunctionOverride;
-import me.machinemaker.treasuremapsplus.villager.VillagerTradeOverride;
+import me.machinemaker.treasuremapsplus.listener.ServerLoad;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public final class TreasureMapsPlus extends JavaPlugin {
 
@@ -42,7 +41,7 @@ public final class TreasureMapsPlus extends JavaPlugin {
     private final boolean replaceMonuments;
     private final boolean replaceMansions;
 
-    private final ReplacementResult result;
+    private @MonotonicNonNull ReplacementResult result;
 
     public TreasureMapsPlus() throws Exception {
         this.saveDefaultConfig();
@@ -52,19 +51,12 @@ public final class TreasureMapsPlus extends JavaPlugin {
         this.replaceChests = this.getConfig().getBoolean("replace.chests", false);
         this.replaceMonuments = this.getConfig().getBoolean("replace.villagers.monument", false);
         this.replaceMansions = this.getConfig().getBoolean("replace.villagers.mansion", false);
-        final ExplorationMapItemFunctionOverride mapFunctionOverride = new ExplorationMapItemFunctionOverride(MinecraftServer.getServer().registryAccess(), this);
-        mapFunctionOverride.override();
-        DatapackOverride.deleteLeftoversAndReload(); // must reload resources override to count how many were changed
-        final VillagerTradeOverride villagerTradeOverride = new VillagerTradeOverride(this);
-        final int replacedTrades = villagerTradeOverride.override();
-        this.result = new ReplacementResult(mapFunctionOverride.replaceCount(), replacedTrades);
     }
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new PlayerInteract(), this);
-        this.getSLF4JLogger().info("Found and replaced {} loot tables with a treasure map", this.result.lootTableCount);
-        this.getSLF4JLogger().info("Found and replaced {} villager trades with a treasure map", this.result.tradeCount);
+        this.getServer().getPluginManager().registerEvents(new ServerLoad(this), this);
 
     }
 

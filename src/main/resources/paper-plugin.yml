@@ -2,5 +2,5 @@ name: TreasureMapsPlus
 main: me.machinemaker.treasuremapsplus.TreasureMapsPlus
 version: ${version}
 author: Machine_Maker
-api-version: "1.20"
+api-version: "1.20.6"
 load: STARTUP

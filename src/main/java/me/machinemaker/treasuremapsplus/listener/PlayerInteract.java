@@ -24,6 +24,7 @@ import java.util.List;
 import me.machinemaker.treasuremapsplus.TreasureMapsPlus;
 import me.machinemaker.treasuremapsplus.Utils;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.StructureTags;
@@ -33,6 +34,7 @@ import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -75,7 +77,7 @@ public final class PlayerInteract implements Listener {
 
     private static List<net.minecraft.world.item.ItemStack> rollLootTable(final ItemStack item, final ServerPlayer player) {
         boolean isChest = true;
-        @Nullable ResourceLocation lootTable = null;
+        @Nullable ResourceKey<LootTable> lootTable = null;
         final PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
         final @Nullable String tagKey = pdc.get(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING);
         if (tagKey != null) {
@@ -95,7 +97,7 @@ public final class PlayerInteract implements Listener {
 
         final LootParams params = isChest ? createChestParams(player) : createEntityParams(player);
         final List<net.minecraft.world.item.ItemStack> items = new ArrayList<>();
-        Utils.getServer().getLootData().getLootTable(lootTable).getRandomItems(params, items::add);
+        Utils.getServer().reloadableRegistries().getLootTable(lootTable).getRandomItems(params, items::add);
         return items;
 
     }
