@@ -39,7 +39,7 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
 
     static {
         try {
-            final ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
+            final ReflectionRemapper remapper = ReflectionRemapper.noop();
             final MethodHandles.Lookup mappedRegistryLookup = MethodHandles.privateLookupIn(MappedRegistry.class, MethodHandles.lookup());
             TO_ID_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "toId"), Reference2IntMap.class);
             BY_VALUE_MAP = mappedRegistryLookup.findGetter(MappedRegistry.class, remapper.remapFieldName(MappedRegistry.class, "byValue"), Map.class);

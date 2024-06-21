@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.6.0"
+version = "0.7.0"
 
 repositories {
     mavenCentral()
@@ -44,18 +44,16 @@ spotless {
     }
 }
 
-tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
+tasks {
     shadowJar {
         isEnableRelocation = true
         relocationPrefix = "me.machinemaker.treasuremapsplus.libs"
     }
 
     compileJava {
-        options.release.set(21)
+        options.release = 21
         options.encoding = Charsets.UTF_8.toString()
     }
 

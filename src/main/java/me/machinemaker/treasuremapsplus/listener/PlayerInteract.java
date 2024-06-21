@@ -81,7 +81,7 @@ public final class PlayerInteract implements Listener {
         final PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
         final @Nullable String tagKey = pdc.get(TreasureMapsPlus.MAP_STRUCTURE_TAG_KEY, PersistentDataType.STRING);
         if (tagKey != null) {
-            final TagKey<Structure> structureTagKey = TagKey.create(Registries.STRUCTURE, new ResourceLocation(tagKey));
+            final TagKey<Structure> structureTagKey = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse(tagKey));
             if (structureTagKey == StructureTags.ON_TREASURE_MAPS) {
                 lootTable = BuiltInLootTables.BURIED_TREASURE;
             } else if (structureTagKey == StructureTags.ON_OCEAN_EXPLORER_MAPS) {
@@ -116,8 +116,8 @@ public final class PlayerInteract implements Listener {
             .withParameter(LootContextParams.THIS_ENTITY, guardian)
             .withParameter(LootContextParams.ORIGIN, player.position())
             .withParameter(LootContextParams.DAMAGE_SOURCE, player.serverLevel().damageSources().playerAttack(player))
-            .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
-            .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player)
+            .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
+            .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player)
             .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
             .withLuck(player.getLuck())
             .create(LootContextParamSets.ENTITY);

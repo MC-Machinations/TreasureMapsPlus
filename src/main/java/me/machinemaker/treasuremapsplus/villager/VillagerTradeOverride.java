@@ -66,7 +66,7 @@ public class VillagerTradeOverride {
 
 
     static {
-        final ReflectionRemapper remapper = ReflectionRemapper.forReobfMappingsInPaperJar();
+        final ReflectionRemapper remapper = ReflectionRemapper.noop();
         TREASURE_MAP_TRADE_LISTING_CLASS = sneaky(() -> Class.forName(remapper.remapClassName("net.minecraft.world.entity.npc.VillagerTrades$TreasureMapForEmeralds")));
         TYPE_SPECIFIC_TRADE_CLASS = sneaky(() -> Class.forName(remapper.remapClassName("net.minecraft.world.entity.npc.VillagerTrades$TypeSpecificTrade")));
 

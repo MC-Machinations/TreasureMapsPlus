@@ -46,7 +46,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 public class ExplorationMapItemFunctionOverride {
 
     @VisibleForTesting
-    static final ResourceKey<LootItemFunctionType<?>> EXPLORATION_FUNCTION_KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, new ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, "exploration_map"));
+    static final ResourceKey<LootItemFunctionType<?>> EXPLORATION_FUNCTION_KEY = ResourceKey.create(Registries.LOOT_FUNCTION_TYPE, ResourceLocation.parse("exploration_map"));
     private static final LootItemFunction.Builder SET_PDC_FUNCTION;
 
     static {
