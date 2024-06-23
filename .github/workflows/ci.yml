@@ -38,7 +38,7 @@ jobs:
           echo version=$project_version >> $GITHUB_OUTPUT
 
       - name: Copy artifacts before uploading
-        run: cp build/libs/TreasureMapsPlus-${{ steps.get_version.outputs.version }}.jar TreasureMapsPlus.jar
+        run: cp build/libs/TreasureMapsPlus-${{ steps.get_version.outputs.version }}-all.jar TreasureMapsPlus.jar
 
       - name: Generate SHA-256 hash
         run: sha256sum TreasureMapsPlus.jar > TreasureMapsPlus.jar.sha256
