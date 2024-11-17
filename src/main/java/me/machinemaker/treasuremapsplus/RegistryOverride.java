@@ -54,8 +54,8 @@ public record RegistryOverride<T>(ResourceKey<? extends Registry<T>> registryKey
 
 
     public void override(final RegistryAccess access) {
-        final Registry<T> registry = access.registryOrThrow(this.registryKey);
-        final Holder.Reference<T> holder = registry.getHolderOrThrow(this.resourceKey);
+        final Registry<T> registry = access.lookupOrThrow(this.registryKey);
+        final Holder.Reference<T> holder = registry.getOrThrow(this.resourceKey);
         final T oldValue = holder.value();
         final int id = registry.getId(oldValue);
         swapToIdMap(registry, id, oldValue, this.value());

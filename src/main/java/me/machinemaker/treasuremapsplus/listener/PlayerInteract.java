@@ -86,7 +86,7 @@ public final class PlayerInteract implements Listener {
                 lootTable = BuiltInLootTables.BURIED_TREASURE;
             } else if (structureTagKey == StructureTags.ON_OCEAN_EXPLORER_MAPS) {
                 isChest = false;
-                lootTable = EntityType.ELDER_GUARDIAN.getDefaultLootTable();
+                lootTable = EntityType.ELDER_GUARDIAN.getDefaultLootTable().orElseThrow();
             } else if (structureTagKey == StructureTags.ON_WOODLAND_EXPLORER_MAPS) {
                 lootTable = BuiltInLootTables.WOODLAND_MANSION;
             }
