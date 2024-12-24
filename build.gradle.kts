@@ -84,7 +84,7 @@ tasks {
         minecraftVersion(libs.versions.minecraft.get())
     }
 
-    create("printVersion") {
+    register("printVersion") {
         doFirst {
             println(version)
         }

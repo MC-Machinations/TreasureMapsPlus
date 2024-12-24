@@ -1,13 +1,13 @@
 [versions]
 minecraft = "1.21.3"
-junit = "5.9.1"
+junit = "5.11.4"
 mirror = "0.2.0"
 reflectionRemapper = "0.1.1"
 
 paperweight = "1.7.2"
-runPaper = "2.3.0"
-shadow = "8.1.7"
-spotless = "6.17.0"
+runPaper = "2.3.1"
+shadow = "8.3.5"
+spotless = "7.0.0.BETA4"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
@@ -18,5 +18,5 @@ reflectionRemapper = { module = "xyz.jpenilla:reflection-remapper", version.ref 
 [plugins]
 paper-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 paper-run = { id = "xyz.jpenilla.run-paper", version.ref = "runPaper" }
-shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
