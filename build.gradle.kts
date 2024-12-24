@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.7.1"
+version = "0.7.2"
 
 repositories {
     mavenCentral()
@@ -26,6 +26,7 @@ dependencies {
 
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform)
 }
 
 java {
@@ -76,7 +77,7 @@ tasks {
         systemProperty("com.mojang.eula.agree", "true")
 
         downloadPlugins {
-            url("https://download.luckperms.net/1543/bukkit/loader/LuckPerms-Bukkit-5.4.130.jar")
+            modrinth("luckperms", "v5.4.145-bukkit")
         }
     }
 

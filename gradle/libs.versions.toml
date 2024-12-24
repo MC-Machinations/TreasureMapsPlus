@@ -1,10 +1,10 @@
 [versions]
-minecraft = "1.21.3"
+minecraft = "1.21.4"
 junit = "5.11.4"
 mirror = "0.2.0"
 reflectionRemapper = "0.1.1"
 
-paperweight = "1.7.2"
+paperweight = "2.0.0-beta.8"
 runPaper = "2.3.1"
 shadow = "8.3.5"
 spotless = "7.0.0.BETA4"
@@ -12,6 +12,7 @@ spotless = "7.0.0.BETA4"
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-platform = { module = "org.junit.platform:junit-platform-launcher" }
 mirror = { module = "me.machinemaker.mirror:mirror-paper", version.ref = "mirror" }
 reflectionRemapper = { module = "xyz.jpenilla:reflection-remapper", version.ref = "reflectionRemapper" }
 
