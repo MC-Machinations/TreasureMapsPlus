@@ -30,6 +30,7 @@ import java.util.function.Function;
 import me.machinemaker.treasuremapsplus.TreasureMapsPlus;
 import me.machinemaker.treasuremapsplus.Utils;
 import net.kyori.adventure.text.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -60,8 +61,7 @@ public class VillagerTradeOverride {
 
 
     private static final List<Collection<VillagerTrades.ItemListing[]>> TRADE_SETS = List.of(
-        VillagerTrades.TRADES.get(VillagerProfession.CARTOGRAPHER).values(),
-        VillagerTrades.EXPERIMENTAL_TRADES.get(VillagerProfession.CARTOGRAPHER).values()
+        VillagerTrades.TRADES.get(VillagerProfession.CARTOGRAPHER).values()
     );
 
 
@@ -104,9 +104,9 @@ public class VillagerTradeOverride {
                         }
                         listings[i] = override;
                     } else if (TYPE_SPECIFIC_TRADE_CLASS.isInstance(listing)) {
-                        final Map<VillagerType, VillagerTrades.ItemListing> trades = TYPE_SPECIFIC_TRADE_PROXY.trades(listing);
-                        final ImmutableMap.Builder<VillagerType, VillagerTrades.ItemListing> newBuilder = ImmutableMap.builder();
-                        for (final Map.Entry<VillagerType, VillagerTrades.ItemListing> entry : trades.entrySet()) {
+                        final Map<ResourceKey<VillagerType>, VillagerTrades.ItemListing> trades = TYPE_SPECIFIC_TRADE_PROXY.trades(listing);
+                        final ImmutableMap.Builder<ResourceKey<VillagerType>, VillagerTrades.ItemListing> newBuilder = ImmutableMap.builder();
+                        for (final Map.Entry<ResourceKey<VillagerType>, VillagerTrades.ItemListing> entry : trades.entrySet()) {
                             if (!(TREASURE_MAP_TRADE_LISTING_CLASS.isInstance(entry.getValue()))) {
                                 newBuilder.put(entry);
                             } else {

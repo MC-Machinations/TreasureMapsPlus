@@ -38,6 +38,6 @@ class VillagerTradeOverrideTest {
     @Test
     void testVillagerOverrideReflection() {
         final VillagerTradeOverride villagerTradeOverride = new VillagerTradeOverride(Collections.emptyList(), true, true);
-        assertEquals(/* cartographer */2 + /* experimental cartographers */2, villagerTradeOverride.override());
+        assertEquals(/* cartographer */2, villagerTradeOverride.override());
     }
 }

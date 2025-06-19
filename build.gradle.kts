@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
@@ -71,6 +73,11 @@ tasks {
 
     test {
         useJUnitPlatform()
+        testLogging {
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
+            events(TestLogEvent.STANDARD_OUT)
+        }
     }
 
     withType<RunServer> { // set for both runServer and runMojangMappedServer

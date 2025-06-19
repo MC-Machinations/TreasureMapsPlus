@@ -103,7 +103,7 @@ public final class PlayerInteract implements Listener {
     }
 
     private static LootParams createChestParams(final ServerPlayer player) {
-        return new LootParams.Builder(player.serverLevel())
+        return new LootParams.Builder(player.level())
             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(player.blockPosition()))
             .withParameter(LootContextParams.THIS_ENTITY, player)
             .withLuck(player.getLuck())
@@ -112,10 +112,10 @@ public final class PlayerInteract implements Listener {
 
     private static LootParams createEntityParams(final ServerPlayer player) {
         final ElderGuardian guardian = new ElderGuardian(EntityType.ELDER_GUARDIAN, player.level());
-        return new LootParams.Builder(player.serverLevel())
+        return new LootParams.Builder(player.level())
             .withParameter(LootContextParams.THIS_ENTITY, guardian)
             .withParameter(LootContextParams.ORIGIN, player.position())
-            .withParameter(LootContextParams.DAMAGE_SOURCE, player.serverLevel().damageSources().playerAttack(player))
+            .withParameter(LootContextParams.DAMAGE_SOURCE, player.level().damageSources().playerAttack(player))
             .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
             .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player)
             .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)

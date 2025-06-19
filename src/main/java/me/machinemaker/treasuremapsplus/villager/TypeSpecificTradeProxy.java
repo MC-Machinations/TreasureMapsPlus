@@ -20,6 +20,7 @@
 package me.machinemaker.treasuremapsplus.villager;
 
 import java.util.Map;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.npc.VillagerType;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.ConstructorInvoker;
@@ -30,9 +31,9 @@ import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
 public interface TypeSpecificTradeProxy {
 
     @FieldGetter("trades")
-    Map<VillagerType, VillagerTrades.ItemListing> trades(Object instance);
+    Map<ResourceKey<VillagerType>, VillagerTrades.ItemListing> trades(Object instance);
 
     @ConstructorInvoker
-    VillagerTrades.ItemListing create(Map<VillagerType, VillagerTrades.ItemListing> trades);
+    VillagerTrades.ItemListing create(Map<ResourceKey<VillagerType>, VillagerTrades.ItemListing> trades);
 
 }
