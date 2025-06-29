@@ -2,7 +2,7 @@
 minecraft = "1.21.6"
 junit = "5.13.1"
 mirror = "0.2.0"
-reflectionRemapper = "0.1.2"
+reflectionRemapper = "0.1.3"
 
 paperweight = "2.0.0-beta.17"
 runPaper = "2.3.1"
