@@ -1,6 +1,6 @@
 [versions]
 minecraft = "1.21.6"
-junit = "5.13.1"
+junit = "5.13.2"
 mirror = "0.2.0"
 reflectionRemapper = "0.1.2"
 
