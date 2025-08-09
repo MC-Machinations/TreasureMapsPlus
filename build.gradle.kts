@@ -38,7 +38,7 @@ java {
 checkstyle {
     configDirectory.set(rootProject.file(".checkstyle"))
     isShowViolations = true
-    toolVersion = "10.26.1"
+    toolVersion = "11.0.0"
 }
 
 spotless {
